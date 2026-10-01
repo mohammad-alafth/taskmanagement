@@ -1,0 +1,42 @@
+# Render Blueprint — deploy langsung, DB gratis permanen via Neon/Supabase.
+# Cara pakai:
+#  1. Buat DB gratis di https://neon.tech (Postgres) -> copy Connection String
+#  2. Push repo ini ke GitHub
+#  3. Render Dashboard -> New -> Blueprint -> pilih repo -> isi DATABASE_URL, APP_URL, APP_KEY, ADMIN_*
+services:
+  - type: web
+    name: taskmanagement
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /login
+    autoDeploy: true
+    envVars:
+      - key: APP_NAME
+        value: TaskManagement
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: LOG_LEVEL
+        value: warning
+      - key: APP_URL
+        sync: false # isi: https://taskmanagement-xxxx.onrender.com (dari tab Settings -> Custom Domain setelah deploy pertama)
+      - key: APP_KEY
+        sync: false # isi: output `php artisan key:generate --show` dari lokal
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DATABASE_URL
+        sync: false # isi: connection string dari Neon/Supabase, contoh: postgres://user:pass@ep-xxx.neon.tech:5432/dbname?sslmode=require
+      - key: SESSION_DRIVER
+        value: file
+      - key: CACHE_DRIVER
+        value: file
+      - key: QUEUE_CONNECTION
+        value: sync
+      - key: ADMIN_NAME
+        value: Administrator
+      - key: ADMIN_EMAIL
+        sync: false # isi: email admin pertama
+      - key: ADMIN_PASSWORD
+        sync: false # isi: password min. 8 karakter, ganti setelah login pertama
